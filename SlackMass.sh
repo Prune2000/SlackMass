@@ -20,39 +20,44 @@ elif [ -z "$db" ]; then
     echo "$RED[+] ERROR: You have not entered the Amass database"
     exit 1
 else
-    echo "$BLU[+] Starting Amass on$RED $domain"
+    echo "$BLU[+] Starting Amass on $domain"
 fi
 
-trap "reset && echo '\n $RED[-] Ctrl+C was Pressed! SlackMass quitting...\n' && exit" INT
+#trap "reset && echo '\n $RED[-] Ctrl+C was Pressed! SlackMass quitting...\n' && exit" INT
 
+mkdir $domain
 
 while true
     do
-    amass enum -passive -d $domain -src > enum.txt
-    echo '\n'
-    cat enum.txt
-    echo '\n'
-    amass track -dir $db -d $domain -last 2
+    subfinder -d $domain -silent | anew ./$domain/subs.txt
+    assetfinder -subs-only $domain | anew ./$domain/subs.txt
+    amass enum -passive -d $domain | anew ./$domain/subs.txt
+
+    echo "$BLU[+] Starting httpx"
+    cat ./$domain/subs.txt | httpx -silent | anew ./$domain/alive.txt
+
+    amass track -dir $db -d $domain -last 3 >/dev/null
     if [ $? -eq 1 ]; then
-        echo "$BLU[+] It was your first time running Amass on$RED $domain, sending results to Slack"
-        cat enum.txt | ./slackcat -u $webhook >/dev/null
-        rm -rf enum.txt
+        echo "$BLU[+] It was your first or second time running Amass on $domain, sending results to Slack"
+        cat ./$domain/alive.txt | ./slackcat -u $webhook >/dev/null
     else 
-        echo  "$BLU[+] Comparing results with previous Amass enum"
+        echo  "$BLU[+] Comparing results with previous two Amass enums"
         # Check if there are changes to not spam Slack
-        amass track -dir $db -d $domain -last 2 > $domain.txt
-        if cat $domain.txt | grep -q "No differences discovered"; then
+        amass track -dir $db -d $domain -last 3 > ./$domain/track-amass.txt
+        if cat ./$domain/track-amass.txt | grep -q "No differences discovered"; then
             echo "$BLU[+] No differences discovered"
-            rm -rf $domain.txt
-            rm -rf enum.txt
+            rm -rf ./$domain/track-amass.txt
         else
-            cat $domain.txt | ./slackcat -u $webhook >/dev/null
-            rm -rf $domain.txt
-            rm -rf enum.txt
+            cat ./$domain/track-amass.txt | ./slackcat -u $webhook >/dev/null
+            rm -rf ./$domain/track-amass.txt
         fi
     fi
+
+    echo "$BLU[+] Starting nuclei"
+    ## test for nuclei 
+    cat ./$domain/alive.txt | nuclei -t /home/kali/cent-nuclei-templates -es info,unknown -etags ssl,network | anew ./$domain/nuclei.txt | ./slackcat -u $webhook 
     echo  '\n'
-    echo  "$BLU[+] Starting in 30 minutes a new Amass scan of$RED $domain"
+    echo  "$BLU[+] Starting in 30 minutes a new Amass scan of $domain"
     sleep 30m
 done      
 
