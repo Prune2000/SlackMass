@@ -5,6 +5,8 @@ RST="\e[0m"
 GRN="\e[92m"
 YEL="\e[93m"
 
+echo "Remember that the script needs to be launched with Sudo rights"
+
 read -p "Please enter the domain Name: " domain
 read -p "Please enter your Slack webhook: " webhook
 read -p "Please enter the location of your Amass database (f.ex.: /~/.config/amass): " db
@@ -23,9 +25,8 @@ else
     echo "$BLU[+] Starting Amass on $domain"
 fi
 
-#trap "reset && echo '\n $RED[-] Ctrl+C was Pressed! SlackMass quitting...\n' && exit" INT
-
 mkdir $domain
+mkdir $domain/aquatone
 
 while true
     do
@@ -53,12 +54,16 @@ while true
         fi
     fi
 
+    echo "$BLU[+] Starting Aquatone (sudo required)"
+    sudo aquatone -input-file alive.txt -out ./$domain/aquatone
+
     echo "$BLU[+] Starting nuclei"
     ## test for nuclei 
     cat ./$domain/alive.txt | nuclei -t /home/kali/cent-nuclei-templates -es info,unknown -etags ssl,network | anew ./$domain/nuclei.txt | ./slackcat -u $webhook 
     echo  '\n'
-    echo  "$BLU[+] Starting in 30 minutes a new Amass scan of $domain"
-    sleep 30m
+
+    echo  "$BLU[+] Starting a new SlackMass of $domain in 1 minute"
+    sleep 1m
 done      
 
 echo  "$GRN[+] SlackMass has done its work. Have a good day. Quitting......$RST\n"
