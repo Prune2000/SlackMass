@@ -22,7 +22,7 @@ elif [ -z "$db" ]; then
     echo "$RED[+] ERROR: You have not entered the Amass database"
     exit 1
 else
-    echo "$BLU[+] Starting Amass on $domain"
+    echo "$BLU[+] Starting subdomain enumeration on $domain"
 fi
 
 mkdir $domain
