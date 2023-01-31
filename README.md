@@ -10,6 +10,7 @@ Requirements: \
 [anew](https://github.com/tomnomnom/anew)\
 [httpx](https://github.com/projectdiscovery/httpx)\
 [nuclei](https://github.com/projectdiscovery/nuclei)\
-[cent](https://github.com/xm1k3/cent)
+[cent](https://github.com/xm1k3/cent)\
+[aquatone](https://github.com/shelld3v/aquatone)
 
 ## Install these tools and edit paths with your hunting folder 
