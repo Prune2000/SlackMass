@@ -55,7 +55,7 @@ while true
     fi
 
     echo "$BLU[+] Starting Aquatone (sudo required)"
-    sudo aquatone -input-file alive.txt -out ./$domain/aquatone
+    sudo aquatone -input-file ./$domain/alive.txt -out ./$domain/aquatone
 
     echo "$BLU[+] Starting nuclei"
     ## test for nuclei 
