@@ -1,7 +1,7 @@
 # SlackMass
-Scripting subdomain enumeration with Amass with slack alerts
+Automated scripting subdomain enumeration with slack alerts and Nuclei scanning.
 
-##This is the script of automation you can edit it with your tools 
+## This is the script of automation you can edit it with your tools 
 
 Requirements: \
 [Subfinder](https://github.com/projectdiscovery/subfinder)\
@@ -10,6 +10,6 @@ Requirements: \
 [anew](https://github.com/tomnomnom/anew)\
 [httpx](https://github.com/projectdiscovery/httpx)\
 [nuclei](https://github.com/projectdiscovery/nuclei)\
-[cent](https://github.com/xm1k3/cent)\
+[cent](https://github.com/xm1k3/cent)
 
 ## Install these tools and edit paths with your hunting folder 
