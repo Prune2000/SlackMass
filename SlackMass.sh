@@ -55,10 +55,10 @@ while true
     fi
 
     echo "$BLU[+] Starting Aquatone (sudo required)"
-    sudo aquatone -input-file ./$domain/alive.txt -out ./$domain/aquatone
+    sudo aquatone -input-file ./$domain/alive.txt -out ./$domain/aquatone -screenshot-delay 10000
+    sudo chmod 777 -R ./$domain/aquatone
 
-    echo "$BLU[+] Starting nuclei"
-    ## test for nuclei 
+    echo "$BLU[+] Starting nuclei" 
     cat ./$domain/alive.txt | nuclei -t /home/kali/cent-nuclei-templates -es info,unknown -etags ssl,network | anew ./$domain/nuclei.txt | ./slackcat -u $webhook 
     echo  '\n'
 
